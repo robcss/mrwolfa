@@ -4,7 +4,7 @@ const { Telegraf } = require('telegraf')
 
 const token = process.env.BOT_TOKEN
 const myPort = process.env.PORT
-const url = process.env.URL
+const url = process.env.HOOK_URL
 
 const enviroment = process.env.NODE_ENV
 
