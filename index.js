@@ -3,7 +3,7 @@ require('dotenv').config();
 const { Telegraf } = require('telegraf')
 
 const token = process.env.BOT_TOKEN
-const myPort = process.env.PORT
+const myPort = process.env.PORT || 3000
 const url = process.env.HOOK_URL
 
 const enviroment = process.env.NODE_ENV
@@ -31,8 +31,6 @@ if (enviroment === "production") {
     const ngrok = require('ngrok');
     const devMode = require("./utils/devmode");
 
+    //run app setting a tunnel to localhost as the webhook
     devMode(app, myPort)
 }
-
-// app(url)
-// devMode(app)
