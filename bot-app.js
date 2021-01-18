@@ -9,13 +9,13 @@ module.exports = (bot) => {
     })
 
     //your bot logic
-    bot.start((ctx) => ctx.reply('Welcome'))
+    const msg = "This is a telegram bot boileplate and everything seems to be working fine"
 
-    bot.on('text', (ctx) => {
-
-        const msg = "This is a telegram bot boileplate and everything seems to be working fine"
-
+    bot.start((ctx) => {
+        ctx.reply('Welcome')
         ctx.reply(msg)
     })
+
+    bot.on('text', (ctx) => ctx.reply(msg))
 
 }

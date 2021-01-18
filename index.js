@@ -4,9 +4,9 @@ const { Telegraf } = require('telegraf')
 
 const token = process.env.BOT_TOKEN
 const myPort = process.env.PORT || 3000
-const url = process.env.HOOK_URL
+const hookUrl = process.env.HOOK_URL
 
-const enviroment = process.env.NODE_ENV
+const environment = process.env.NODE_ENV
 
 const botApp = require("./bot-app")
 const botLaunch = require("./bot-launch")
@@ -17,20 +17,26 @@ if (token === undefined) {
 
 const bot = new Telegraf(token)
 
-const app = (botUrl) => {
+const app = (botUrl, botPort) => {
     botApp(bot);
-    botLaunch(bot, botUrl, myPort);
-    console.log(enviroment, botUrl, myPort)
+    botLaunch(bot, botUrl, botPort);
+    console.log(`Environment: ${environment}\nWebhook:${botUrl}\nPort:${botPort}`)
 }
 
-if (enviroment === "production") {
+if (environment === "production") {
 
-    app(url)
+    app(hookUrl, myPort)
 
-} else if (enviroment === "development") {
-    const ngrok = require('ngrok');
-    const devMode = require("./utils/devmode");
-
+} else if (environment === "development") {
     //run app setting a tunnel to localhost as the webhook
-    devMode(app, myPort)
+    const ngrok = require('ngrok');
+
+    ngrok.connect(myPort)
+        .then(localUrl => {
+            app(localUrl, myPort)
+        })
+        .catch(e => {
+            console.log("Ngrok error")
+            console.log(e)
+        })
 }

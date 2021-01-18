@@ -1,12 +1,12 @@
 const { Telegraf } = require('telegraf')
 
-module.exports = (bot, botUrl, myPort) => {
+module.exports = (bot, botUrl, botPort) => {
 
     //set and start webhook
     bot.launch({
         webhook: {
             domain: botUrl,
-            port: myPort
+            port: botPort
         }
     })
 
