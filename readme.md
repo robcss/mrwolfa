@@ -88,13 +88,13 @@ In your app page go to **Settings**, down to **Config Vars** and click on **Reve
 
 [![config.png](https://i.postimg.cc/sDBLvckY/config.png)](https://postimg.cc/7fk9RgYh)
 
-Set HOOK_URL to your app url. which you can find down on the same page under the **Domains** section.
+Set HOOK_URL to your app url, which you can find down on the same page under the **Domains** section.
 
 Set BOT_TOKEN to your bot token.
 
 PORT will be set automatically by Heroku.
 
-NODE_ENV will be set to "production" by Heroku**.
+NODE_ENV will be set to "production" by Heroku.
 
 ### Login to Heroku via CLI
 ```
