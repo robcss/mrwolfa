@@ -1,4 +1,5 @@
 const { Telegraf } = require('telegraf')
+const { synthesizeVoice } = require("./apis/text-to-speech")
 
 module.exports = (bot) => {
 
@@ -16,6 +17,16 @@ module.exports = (bot) => {
         ctx.reply(msg)
     })
 
-    bot.on('text', (ctx) => ctx.reply(msg))
+    bot.on('text', async (ctx) => {
+
+        const text = ctx.update.message.text
+        const audioContent = await synthesizeVoice(text)
+
+
+        ctx.replyWithVoice({
+            source: audioContent
+        })
+
+    })
 
 }
