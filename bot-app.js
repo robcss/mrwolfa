@@ -1,4 +1,5 @@
 const { Telegraf } = require('telegraf')
+const rateLimit = require('telegraf-ratelimit')
 const { synthesizeVoice } = require("./apis/text-to-speech")
 
 module.exports = (bot) => {
@@ -9,9 +10,17 @@ module.exports = (bot) => {
         ctx.reply("Something's wrong with my circuits :(")
     })
 
-    //your bot logic
-    const msg = "This is a telegram bot boileplate and everything seems to be working fine"
+    //rate limiting
+    // Set limit to 1 message per 0.8 second
+    const limitConfig = {
+        window: 800,
+        limit: 1,
+        onLimitExceeded: (ctx, next) => ctx.reply('Rate limit exceeded')
+    }
 
+    bot.use(rateLimit(limitConfig))
+
+    //your bot logic
     bot.start((ctx) => {
         ctx.reply('Welcome')
         ctx.reply(msg)
@@ -20,12 +29,13 @@ module.exports = (bot) => {
     bot.on('text', async (ctx) => {
 
         const text = ctx.update.message.text
-        const audioContent = await synthesizeVoice(text)
+        // const audioContent = await synthesizeVoice(text)
 
 
-        ctx.replyWithVoice({
-            source: audioContent
-        })
+        // ctx.replyWithVoice({
+        //     source: audioContent
+        // })
+        console.log(text)
 
     })
 
