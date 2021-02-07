@@ -1,5 +1,5 @@
 {
-  "name": "hooktestbot",
+  "name": "mrwolfa",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -16,6 +16,7 @@
     "mathjs": "^9.1.0",
     "ngrok": "^3.4.0",
     "telegraf": "^4.0.1",
-    "telegraf-ratelimit": "^2.0.0"
+    "telegraf-ratelimit": "^2.0.0",
+    "wolfram-alpha-api": "https://products.wolframalpha.com/api/libraries/javascript/wolfram-alpha-api-1.0.0-rc.1.tgz"
   }
 }

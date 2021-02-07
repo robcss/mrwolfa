@@ -10,6 +10,10 @@ const replies = require("./utils/replies")
 const { synthesizeVoice } = require("./apis/text-to-speech")
 const { re } = require('mathjs')
 
+const WolframAlphaAPI = require('wolfram-alpha-api');
+const waApi = WolframAlphaAPI(process.env.WOLFRAM_APP_ID);
+
+
 const maxCallbackTime = process.env.MAX_CALLBACK_TIME
 
 module.exports = (bot) => {
@@ -55,10 +59,10 @@ module.exports = (bot) => {
 
 
         const userInput = ctx.message.text
-        console.log(userInput)
+        // console.log(userInput)
 
         const question = userInput.replace(/!ask\s+/, "")
-        console.log(question)
+        // console.log(question)
 
         if (isTooLong(question)) {
             return ctx.reply(replies.tooLong)
@@ -104,12 +108,18 @@ module.exports = (bot) => {
 
     }
 
-    bot.action("Text", checkCallbackTime, (ctx) => {
+    bot.action("Text", checkCallbackTime, async (ctx) => {
 
         const userInput = ctx.update.callback_query.message.reply_to_message.text
         const question = userInput.replace(/!ask?\s+/, "")
 
-        ctx.reply("Wolfram alpha Short Answer API")
+        try {
+            const result = await waApi.getSpoken(question)
+            ctx.reply(result)
+        } catch (error) {
+            ctx.reply(error.message)
+        }
+
     })
 
 
