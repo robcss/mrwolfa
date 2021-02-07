@@ -45,7 +45,7 @@ module.exports.synthesizeVoice = async (text) => {
     // Performs the text-to-speech request
     const [response] = await client.synthesizeSpeech(request);
 
-    console.log('voice synthesized');
+    // console.log('voice synthesized');
 
     return response.audioContent
 

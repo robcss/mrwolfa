@@ -46,23 +46,48 @@ module.exports = (bot) => {
         ctx.reply(replies.start)
     })
 
-    //ask question in private chat
-    ///^\!ask\s?.*/
-    ///^\!\bask\b$ matcha senza spazio
-    //^\!\bask\b\s+.* matcha solo con spazio + qualunqe cosa
+    /////////////////Answers
+    const getSpokenAnswer = async (ctx, question, msgId) => {
+        try {
+            ctx.reply("Computing...")
+            const result = await waApi.getSpoken(question)
+            return ctx.reply(result, { reply_to_message_id: msgId })
+        } catch (error) {
+            return ctx.reply(error.message, { reply_to_message_id: msgId })
+        }
+    }
 
-    bot.hears(/^\!\bask\b$/, (ctx) => {
-        ctx.reply("Don't forget to write your question after !ask, for example:\n!ask how big is the moon?")
-    })
+    const getShortAnswer = async (ctx, question, msgId) => {
+        try {
+            ctx.reply("Computing...")
+            const result = await waApi.getShort(question)
+            return ctx.reply(result, { reply_to_message_id: msgId })
+        } catch (error) {
+            return ctx.reply(error.message, { reply_to_message_id: msgId })
+        }
+    }
 
-    bot.hears(/^\!\bask\b\s+.*/, (ctx) => {
+    const speakSpokenAnswer = async (ctx, question, msgId) => {
 
+        try {
+            ctx.reply("Computing...")
 
-        const userInput = ctx.message.text
-        // console.log(userInput)
+            const result = await waApi.getSpoken(question)
 
-        const question = userInput.replace(/!ask\s+/, "")
-        // console.log(question)
+            const audioContent = await synthesizeVoice(result)
+
+            return ctx.replyWithVoice({
+                source: audioContent
+            }, { reply_to_message_id: msgId })
+
+        } catch (error) {
+            return ctx.reply(error.message, { reply_to_message_id: msgId })
+        }
+
+    }
+
+    /////////////////Answer question
+    const answerQuestion = async (ctx, question, getAnswer) => {
 
         if (isTooLong(question)) {
             return ctx.reply(replies.tooLong)
@@ -72,63 +97,55 @@ module.exports = (bot) => {
 
         if (isEnglish(question)) {
 
-            const btns = Markup.inlineKeyboard([
-                Markup.button.callback(replies.textButton, 'Text'),
-                Markup.button.callback(replies.voiceButton, 'Voice')
-            ]).reply_markup
-
-            ctx.reply(replies.chooseAnswer, { reply_to_message_id: msgId, reply_markup: btns })
+            return await getAnswer(ctx, question, msgId)
 
         } else {
             try {
                 const mathResult = math.evaluate(question)
-                ctx.reply(`${replies.math} ${mathResult}`, { reply_to_message_id: msgId })
+                return ctx.reply(`${replies.math} ${mathResult}`, { reply_to_message_id: msgId })
             } catch {
                 if (/\d/.test(question)) {
-                    ctx.reply("Wolfram alpha Short Answer API")
+                    return await getShortAnswer(ctx, question, msgId)
                 } else {
-                    ctx.reply(replies.askAgain, { reply_to_message_id: msgId })
+                    return ctx.reply(replies.askAgain, { reply_to_message_id: msgId })
                 }
             }
         }
-
-    })
-
-    //middleware that checks if callback is called too late
-    const checkCallbackTime = (ctx, next) => {
-        const elapsedTimeFromCallbackQuery = (Date.now() / 1000) - ctx.update.callback_query.message.date //in seconds
-
-        const msgId = ctx.update.callback_query.message.message_id
-
-        if (elapsedTimeFromCallbackQuery > maxCallbackTime) {
-            return ctx.reply(replies.lateCallback, { reply_to_message_id: msgId })
-        } else {
-            next()
-        }
-
     }
 
-    bot.action("Text", checkCallbackTime, async (ctx) => {
+    /////////////////Events (commands)
+    bot.hears(/^\?\bmes\b$/, (ctx) => {
+        const msgId = ctx.update.message.message_id
+        ctx.reply("Don't forget to write your question after ?mes, for example:\n?mes how big is the moon?", { reply_to_message_id: msgId })
+    })
 
-        const userInput = ctx.update.callback_query.message.reply_to_message.text
-        const question = userInput.replace(/!ask?\s+/, "")
+    bot.hears(/^\?\bmes\b\s+.*/, async (ctx) => {
 
-        try {
-            const result = await waApi.getSpoken(question)
-            ctx.reply(result)
-        } catch (error) {
-            ctx.reply(error.message)
-        }
-
+        const userInput = ctx.message.text
+        // console.log(userInput)
+        const question = userInput.replace(/\?mes\s+/, "")
+        // console.log(question)
+        await answerQuestion(ctx, question, getSpokenAnswer)
     })
 
 
-    bot.action("Voice", checkCallbackTime, (ctx) => {
-        const userInput = ctx.update.callback_query.message.reply_to_message.text
-        const question = userInput.replace(/!ask?\s+/, "")
 
-        ctx.reply("Wolfram alpha Spoken Answer API")
+    bot.hears(/^\?\bvoi\b$/, (ctx) => {
+        const msgId = ctx.update.message.message_id
+        ctx.reply("Don't forget to write your question after ?voi, for example:\n?voi how big is the moon?", { reply_to_message_id: msgId })
     })
+
+    bot.hears(/^\?\bvoi\b\s+.*/, async (ctx) => {
+
+        const userInput = ctx.message.text
+        // console.log(userInput)
+        const question = userInput.replace(/\?voi\s+/, "")
+        // console.log(question)
+        await answerQuestion(ctx, question, speakSpokenAnswer)
+    })
+
+
+
 
     //inline bot logic 
     bot.on("inline_query", async (ctx) => {
@@ -167,12 +184,12 @@ module.exports = (bot) => {
     // bot.on('text', async (ctx) => {
 
     //     const text = ctx.update.message.text
-    //     // const audioContent = await synthesizeVoice(text)
+    //     const audioContent = await synthesizeVoice(text)
 
 
-    //     // ctx.replyWithVoice({
-    //     //     source: audioContent
-    //     // })
+    //     ctx.replyWithVoice({
+    //         source: audioContent
+    //     })
     // })
 
 }
