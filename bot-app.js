@@ -3,18 +3,19 @@ require('dotenv').config();
 const { Telegraf, Markup } = require('telegraf')
 const rateLimit = require('telegraf-ratelimit')
 const math = require("mathjs")
+const { re } = require("mathjs")
 
 const { isEnglish, isTooLong } = require("./utils/validators")
 const replies = require("./utils/replies")
+const thumbs = require("./utils/thumbnails")
 
 const { synthesizeVoice } = require("./apis/text-to-speech")
-const { re } = require('mathjs')
 
 const WolframAlphaAPI = require('wolfram-alpha-api');
 const waApi = WolframAlphaAPI(process.env.WOLFRAM_APP_ID);
 
 
-const maxCallbackTime = process.env.MAX_CALLBACK_TIME
+
 
 module.exports = (bot) => {
 
@@ -46,25 +47,39 @@ module.exports = (bot) => {
         ctx.reply(replies.start)
     })
 
+
     /////////////////Answers
-    const getSpokenAnswer = async (ctx, question, msgId) => {
+    const getWolframSpoken = async (question) => {
         try {
-            ctx.reply("Computing...")
-            const result = await waApi.getSpoken(question)
-            return ctx.reply(result, { reply_to_message_id: msgId })
+            console.log("waApi call")
+            return await waApi.getSpoken(question)
         } catch (error) {
-            return ctx.reply(error.message, { reply_to_message_id: msgId })
+            console.log(error)
+            return error.message
         }
     }
 
-    const getShortAnswer = async (ctx, question, msgId) => {
+    const getWolframShort = async (question) => {
         try {
-            ctx.reply("Computing...")
-            const result = await waApi.getShort(question)
-            return ctx.reply(result, { reply_to_message_id: msgId })
+            console.log("waApi call")
+            return await waApi.getShort(question)
         } catch (error) {
-            return ctx.reply(error.message, { reply_to_message_id: msgId })
+            console.log(error)
+            return error.message
         }
+    }
+
+    const writeSpokenAnswer = async (ctx, question, msgId) => {
+        ctx.reply("Computing...")
+        const result = await getWolframSpoken(question)
+        return ctx.reply(result, { reply_to_message_id: msgId })
+
+    }
+
+    const writeShortAnswer = async (ctx, question, msgId) => {
+        ctx.reply("Computing...")
+        const result = await getWolframShort(question)
+        return ctx.reply(result, { reply_to_message_id: msgId })
     }
 
     const speakSpokenAnswer = async (ctx, question, msgId) => {
@@ -86,34 +101,162 @@ module.exports = (bot) => {
 
     }
 
-    /////////////////Answer question
-    const answerQuestion = async (ctx, question, getAnswer) => {
 
-        if (isTooLong(question)) {
-            return ctx.reply(replies.tooLong)
+    //////chatBot methods
+    const chatBot = {
+
+        replyTooLong: function () {
+            return this.ctx.reply(replies.tooLong)
+        },
+
+        replyGetAnswer: async function () {
+            return await this.getAnswer(this.ctx, this.question, this.msgId)
+        },
+
+        replyMath: function () {
+            return this.ctx.reply(`${replies.math} ${this.mathResult}`, { reply_to_message_id: this.msgId })
+        },
+
+        replyExpression: async function () {
+            return await writeShortAnswer(this.ctx, this.question, this.msgId)
+        },
+
+        replyInvalid: function () {
+            return this.ctx.reply(replies.invalidQuestion, { reply_to_message_id: this.msgId })
         }
 
-        const msgId = ctx.update.message.message_id
+    }
+
+
+    //////chatBot methods
+    const inlineBot = {
+
+        replyTooLong: function () {
+            const answer = replies.tooLong
+            const results = [{
+                type: 'article',
+                id: "tooLong",
+                title: replies.inlineTitle,
+                description: answer,
+                url: "",
+                thumb_url: thumbs.wolframLogo,
+                input_message_content: {
+                    message_text: answer
+                }
+            }]
+
+            return this.ctx.answerInlineQuery(results)
+        },
+
+        replyGetAnswer: async function () {
+            const answer = await this.getAnswer(this.question) //getWolframSpoken
+            const results = [{
+                type: 'article',
+                id: "getAnswer",
+                title: replies.inlineTitle,
+                description: answer,
+                url: "",
+                thumb_url: thumbs.wolframLogo,
+                input_message_content: {
+                    message_text: answer
+                }
+            }]
+
+            return await this.ctx.answerInlineQuery(results)
+        },
+
+        replyMath: function () {
+            const answer = this.mathResult ? `${replies.math} ${this.mathResult}` : "Waiting for a valid question :)"
+            const results = [{
+                type: 'article',
+                id: "math",
+                title: replies.inlineTitle,
+                description: answer,
+                url: "",
+                thumb_url: thumbs.wolframLogo,
+                input_message_content: {
+                    message_text: answer
+                }
+            }]
+
+            return this.ctx.answerInlineQuery(results)
+        },
+
+        replyExpression: async function () {
+            const answer = await getWolframShort(this.question)
+            const results = [{
+                type: 'article',
+                id: "expression",
+                title: replies.inlineTitle,
+                description: answer,
+                url: "",
+                thumb_url: thumbs.wolframLogo,
+                input_message_content: {
+                    message_text: answer
+                }
+            }]
+
+            return await this.ctx.answerInlineQuery(results)
+        },
+
+        replyInvalid: function () {
+            const answer = replies.invalidQuestion
+            const results = [{
+                type: 'article',
+                id: "invalid",
+                title: replies.inlineTitle,
+                description: answer,
+                url: "",
+                thumb_url: thumbs.wolframLogo,
+                input_message_content: {
+                    message_text: answer
+                }
+            }]
+
+            return this.ctx.answerInlineQuery(results)
+        }
+
+    }
+
+
+    /////////////////Answer question
+    const answerQuestion = async (ctx, question, currentBot, getAnswer) => {
+
+        currentBot.ctx = ctx;
+
+        if (isTooLong(question)) {
+            return currentBot.replyTooLong()
+        }
+
+        const msgId = ctx.update.message ? ctx.update.message.message_id : null
+
+        currentBot.msgId = msgId
+        currentBot.question = question
 
         if (isEnglish(question)) {
-
-            return await getAnswer(ctx, question, msgId)
+            // console.log("get answer")
+            currentBot.getAnswer = getAnswer
+            return await currentBot.replyGetAnswer()
 
         } else {
             try {
                 const mathResult = math.evaluate(question)
-                return ctx.reply(`${replies.math} ${mathResult}`, { reply_to_message_id: msgId })
-            } catch {
+                // console.log("math")
+                currentBot.mathResult = mathResult
+                return currentBot.replyMath()
+            } catch (e) {
+                // console.log(e)
                 if (/\d/.test(question)) {
-                    return await getShortAnswer(ctx, question, msgId)
+                    // console.log("expression")
+                    return await currentBot.replyExpression()
                 } else {
-                    return ctx.reply(replies.askAgain, { reply_to_message_id: msgId })
+                    return currentBot.replyInvalid()
                 }
             }
         }
     }
 
-    /////////////////Events (commands)
+    /////////////////Chatbot Events (commands)
     bot.hears(/^\?\bmes\b$/, (ctx) => {
         const msgId = ctx.update.message.message_id
         ctx.reply("Don't forget to write your question after ?mes, for example:\n?mes how big is the moon?", { reply_to_message_id: msgId })
@@ -125,7 +268,7 @@ module.exports = (bot) => {
         // console.log(userInput)
         const question = userInput.replace(/\?mes\s+/, "")
         // console.log(question)
-        await answerQuestion(ctx, question, getSpokenAnswer)
+        await answerQuestion(ctx, question, chatBot, writeSpokenAnswer)
     })
 
 
@@ -141,7 +284,7 @@ module.exports = (bot) => {
         // console.log(userInput)
         const question = userInput.replace(/\?voi\s+/, "")
         // console.log(question)
-        await answerQuestion(ctx, question, speakSpokenAnswer)
+        await answerQuestion(ctx, question, chatBot, speakSpokenAnswer)
     })
 
 
@@ -150,46 +293,12 @@ module.exports = (bot) => {
     //inline bot logic 
     bot.on("inline_query", async (ctx) => {
 
-        console.log(ctx.inlineQuery.query)
+        const question = ctx.inlineQuery.query
+        console.log(question)
 
-        const results = [{
-            type: 'article',
-            id: "test id",
-            title: "test title",
-            description: "test description",
-            // thumb_width: 10,
-            // thumb_height: 10,
-            url: "",
-            thumb_url: "https://upload.wikimedia.org/wikipedia/en/thumb/1/17/Wolfram_Language_Logo_2016.svg/1200px-Wolfram_Language_Logo_2016.svg.png",
-            input_message_content: {
-                message_text: `Question: ${ctx.inlineQuery.query}`
-            }
-            // reply_markup: Markup.inlineKeyboard([
-            //     Markup.button.callback('TEST', "test")
-            // ]).reply_markup
-        }]
-
-        return await ctx.answerInlineQuery(results)
+        await answerQuestion(ctx, question, inlineBot, getWolframSpoken)
     })
 
 
-    // bot.action('test', (ctx) => {
-    //     const chatId = ctx.update.callback_query.chat_instance
-    //     console.log(ctx)
-    //     // ctx.telegram.sendMessage(chatId, "success")
-    //     return ctx.answerCbQuery(`Oh, ${ctx.match[0]}! Great choice`)
-    // })
-
-
-    // bot.on('text', async (ctx) => {
-
-    //     const text = ctx.update.message.text
-    //     const audioContent = await synthesizeVoice(text)
-
-
-    //     ctx.replyWithVoice({
-    //         source: audioContent
-    //     })
-    // })
 
 }
