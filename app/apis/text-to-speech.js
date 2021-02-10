@@ -2,10 +2,6 @@ require('dotenv').config()
 // Imports the Google Cloud client library
 const textToSpeech = require('@google-cloud/text-to-speech');
 
-// Import other required libraries
-const fs = require('fs');
-const util = require('util');
-
 //authentication
 const keysEnvVar = process.env.CREDS
 
@@ -48,9 +44,4 @@ module.exports.synthesizeVoice = async (text) => {
     // console.log('voice synthesized');
 
     return response.audioContent
-
-    // Write the binary audio content to a local file
-    // const writeFile = util.promisify(fs.writeFile);
-    // await writeFile('hello.ogg', response.audioContent, 'binary');
-    // console.log('Audio content written to file: output.mp3');
 }
