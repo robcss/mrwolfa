@@ -1,14 +1,13 @@
 require('dotenv').config();
 
-const { Telegraf, Markup } = require('telegraf')
 const rateLimit = require('telegraf-ratelimit')
+
 const math = require("mathjs")
 const { re } = require("mathjs")
 
 const { isEnglish, isTooLong } = require("./app/utils/validators")
 const replies = require("./app/utils/replies")
 
-const { getWolframSpoken, getWolframShort } = require("./app/apis/wolfram-alpha")
 
 const chatBot = require("./app/chat-bot")
 const inlineBot = require("./app/inline-bot")
@@ -23,10 +22,10 @@ module.exports = (bot) => {
     })
 
     // rate limiting
-    // Set limit to 1 message per 1 second
+    // Set limit to 2 message per 1 second
     const limitConfig = {
         window: 1000,
-        limit: 1,
+        limit: 2,
         onLimitExceeded: (ctx, next) => {
             try {
                 ctx.reply(replies.exceed)
@@ -45,7 +44,7 @@ module.exports = (bot) => {
     })
 
     /////////////////Answer question
-    const answerQuestion = async (ctx, question, currentBot, getAnswer) => {
+    const answerQuestion = async (ctx, question, currentBot, answerMethod) => {
 
         currentBot.ctx = ctx;
 
@@ -53,30 +52,24 @@ module.exports = (bot) => {
             return currentBot.replyTooLong()
         }
 
-        const msgId = ctx.update.message ? ctx.update.message.message_id : null
-
-        currentBot.msgId = msgId
+        currentBot.msgId = ctx.update.message ? ctx.update.message.message_id : null
         currentBot.question = question
 
         if (isEnglish(question)) {
-            // console.log("get answer")
+
             if (question.split(" ").length < 3) {
                 return currentBot.replyTooShort()
             }
 
-            currentBot.getAnswer = getAnswer
-            return await currentBot.replyGetAnswer()
+            return await currentBot[answerMethod]();
 
         } else {
             try {
-                const mathResult = math.evaluate(question)
-                // console.log("math")
-                currentBot.mathResult = mathResult
+                currentBot.mathResult = math.evaluate(question)
                 return currentBot.replyMath()
             } catch (e) {
-                // console.log(e)
-                if (/\d/.test(question)) {
-                    // console.log("expression")
+
+                if (/[\d-+/*/^]/g.test(question)) { //\d
                     return await currentBot.replyExpression()
                 } else {
                     return currentBot.replyInvalid()
@@ -85,7 +78,7 @@ module.exports = (bot) => {
         }
     }
 
-    /////////////////Chatbot Events (commands)
+    /////////////////chatBot Events (commands)
     bot.hears(/^\?\bmes\b$/, (ctx) => {
         const msgId = ctx.update.message.message_id
         ctx.reply("Don't forget to write your question after ?mes, for example:\n?mes how big is the moon?", { reply_to_message_id: msgId })
@@ -97,7 +90,7 @@ module.exports = (bot) => {
         // console.log(userInput)
         const question = userInput.replace(/\?mes\s+/, "")
         // console.log(question)
-        await answerQuestion(ctx, question, chatBot, chatBot.writeSpokenAnswer)
+        await answerQuestion(ctx, question, chatBot, "writeSpokenAnswer")
     })
 
 
@@ -113,26 +106,18 @@ module.exports = (bot) => {
         // console.log(userInput)
         const question = userInput.replace(/\?voi\s+/, "")
         // console.log(question)
-        await answerQuestion(ctx, question, chatBot, chatBot.speakSpokenAnswer)
+        await answerQuestion(ctx, question, chatBot, "speakSpokenAnswer")
     })
 
 
-    //inline bot logic 
+    /////////////////inlineBot Events (commands)
     bot.on("inline_query", async (ctx) => {
 
         const question = ctx.inlineQuery.query
         // console.log(question)
 
-        await answerQuestion(ctx, question, inlineBot, inlineBot.getWolframSpoken)
+        await answerQuestion(ctx, question, inlineBot, "replySpokenAnswer")
     })
-
-
-    // bot.on("text", (ctx) => {
-
-    //     const userInput = ctx.message.text
-
-    // })
-
 
 
 }
