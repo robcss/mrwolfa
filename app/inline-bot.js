@@ -47,7 +47,6 @@ module.exports = {
         this.article.input_message_content.message_text = `Q: ${this.question}\nA: ${answer}`
 
         return this.ctx.answerInlineQuery([this.article])
-        // return this.ctx.answerInlineQuery({ results: [this.article], switch_pm_text: "switch" })
     },
 
     replyShortAnswer: async function () {
@@ -66,11 +65,11 @@ module.exports = {
             this.article.input_message_content.message_text = `Q: ${this.question}\nA: ${this.mathResult}`
 
         } else {
-            this.article.description = "Waiting for a valid question :)"
-            this.article.input_message_content.message_text = `Q: ${this.question}\nA: No valid question was asked! :(`
+            this.article.description = replies.inlineWelcome
+            this.article.input_message_content.message_text = `Q: ${this.question}\nA: ${replies.inlineInvalid}`
         }
 
-        return this.ctx.answerInlineQuery([this.article])
+        return this.ctx.answerInlineQuery([this.article], { switch_pm_text: replies.inlineSwitchPrivate, switch_pm_parameter: "start" })
     },
 
     replyExpression: async function () {
