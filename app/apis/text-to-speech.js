@@ -3,10 +3,10 @@ require('dotenv').config()
 const textToSpeech = require('@google-cloud/text-to-speech');
 
 //authentication
-const keysEnvVar = process.env.CREDS
+const keysEnvVar = process.env.GOOGLE_CREDS
 
 if (!keysEnvVar) {
-    throw new Error("The $CREDS environment variable was not found!")
+    throw new Error("The $GOOGLE_CREDS environment variable was not found!")
 }
 
 const { project_id, client_email, private_key } = JSON.parse(keysEnvVar)

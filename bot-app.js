@@ -40,7 +40,13 @@ module.exports = (bot) => {
 
     //  your bot logic
     bot.start((ctx) => {
-        ctx.reply(replies.start)
+        ctx.replyWithMarkdown(replies.start)
+    })
+
+    bot.command("examples", async (ctx) => {
+        for (const msg of replies.examples) {
+            await ctx.reply(msg)
+        }
     })
 
     /////////////////Answer question
@@ -79,32 +85,32 @@ module.exports = (bot) => {
     }
 
     /////////////////chatBot Events (commands)
-    bot.hears(/^\?\bmes\b$/, (ctx) => {
+    bot.hears(/^\!\bmes\b$/, (ctx) => {
         const msgId = ctx.update.message.message_id
-        ctx.reply("Don't forget to write your question after ?mes, for example:\n?mes how big is the moon?", { reply_to_message_id: msgId })
+        ctx.reply("Don't forget to write your question after !mes, for example:\n!mes how big is the moon?", { reply_to_message_id: msgId })
     })
 
-    bot.hears(/^\?\bmes\b\s+.*/, async (ctx) => {
+    bot.hears(/^\!\bmes\b\s+.*/, async (ctx) => {
 
         const userInput = ctx.message.text
         // console.log(userInput)
-        const question = userInput.replace(/\?mes\s+/, "")
+        const question = userInput.replace(/\!mes\s+/, "")
         // console.log(question)
         await answerQuestion(ctx, question, chatBot, "writeSpokenAnswer")
     })
 
 
 
-    bot.hears(/^\?\bvoi\b$/, (ctx) => {
+    bot.hears(/^\!\bvoi\b$/, (ctx) => {
         const msgId = ctx.update.message.message_id
-        ctx.reply("Don't forget to write your question after ?voi, for example:\n?voi how big is the moon?", { reply_to_message_id: msgId })
+        ctx.reply("Don't forget to write your question after !voi, for example:\n!voi how big is the moon?", { reply_to_message_id: msgId })
     })
 
-    bot.hears(/^\?\bvoi\b\s+.*/, async (ctx) => {
+    bot.hears(/^\!\bvoi\b\s+.*/, async (ctx) => {
 
         const userInput = ctx.message.text
         // console.log(userInput)
-        const question = userInput.replace(/\?voi\s+/, "")
+        const question = userInput.replace(/\!voi\s+/, "")
         // console.log(question)
         await answerQuestion(ctx, question, chatBot, "speakSpokenAnswer")
     })
