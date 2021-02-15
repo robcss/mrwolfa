@@ -29,8 +29,8 @@ if (environment === "production") {
 
 } else if (environment === "review") {
 
-    const reviewAppUrl = `https://${process.HEROKU_APP_NAME}.herokuapp.com/`
-    console.log(process.HEROKU_APP_NAME, reviewAppUrl)
+    const reviewAppUrl = `https://${process.env.HEROKU_APP_NAME}.herokuapp.com/`
+    console.log(process.env.HEROKU_APP_NAME, reviewAppUrl)
 
     app(reviewAppUrl, myPort)
 
