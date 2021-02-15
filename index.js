@@ -27,6 +27,13 @@ if (environment === "production") {
 
     app(hookUrl, myPort)
 
+} else if (environment === "review") {
+
+    const reviewAppUrl = `https://${process.env.HEROKU_APP_NAME}.herokuapp.com/`
+    console.log(process.env.HEROKU_APP_NAME, reviewAppUrl)
+
+    app(reviewAppUrl, myPort)
+
 } else if (environment === "development") {
     //run app setting a tunnel to localhost as the webhook
     const ngrok = require('ngrok');

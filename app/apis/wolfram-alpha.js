@@ -3,7 +3,7 @@ require('dotenv').config()
 const replies = require("../utils/replies")
 
 const WolframAlphaAPI = require('wolfram-alpha-api');
-const waProdId = process.env.NODE_ENV === "production" ? process.env.WOLFRAM_APP_ID : process.env.WOLFRAM_APP_ID_DEV
+const waProdId = process.env.NODE_ENV === "development" ? process.env.WOLFRAM_APP_ID_DEV : process.env.WOLFRAM_APP_ID
 const waIds = [waProdId, ...process.env.WOLFRAM_APP_ID_BACKUP.split(",")]
 
 const waApis = waIds.map(id => WolframAlphaAPI(id));

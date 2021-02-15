@@ -1,0 +1,16 @@
+{
+    "name": "mrwolfa",
+    "formation": {
+        "web": {
+            "quantity": 1,
+            "size": "free"
+        }
+    },
+    "environments": {
+        "review": {
+            "env": {
+                "NODE_ENV": "review"
+            }
+        }
+    }
+}
