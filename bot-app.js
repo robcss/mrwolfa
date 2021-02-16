@@ -14,6 +14,7 @@ const inlineBot = require("./app/inline-bot")
 
 
 const Question = require("./app/Question")
+const EchoTestAnswerer = require("./app/EchoTestAnswerer")
 
 
 module.exports = (bot) => {
@@ -133,9 +134,13 @@ module.exports = (bot) => {
 
     //     const text = ctx.update.message.text
 
-    //     const question = new Question(text)
+    //     // const question = new Question(text)
 
-    //     console.log(question.getInfo())
+    //     // console.log(question.getInfo())
+
+    //     const test = new EchoTestAnswerer(ctx, text)
+
+    //     test.answer()
 
     // })
 
