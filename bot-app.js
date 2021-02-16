@@ -13,6 +13,9 @@ const chatBot = require("./app/chat-bot")
 const inlineBot = require("./app/inline-bot")
 
 
+const Question = require("./app/Question")
+
+
 module.exports = (bot) => {
 
     //error handling
@@ -125,5 +128,15 @@ module.exports = (bot) => {
         await answerQuestion(ctx, question, inlineBot, "replySpokenAnswer")
     })
 
+
+    // bot.on('text', (ctx) => {
+
+    //     const text = ctx.update.message.text
+
+    //     const question = new Question(text)
+
+    //     console.log(question.getInfo())
+
+    // })
 
 }
