@@ -15,7 +15,7 @@ If you want me to answer you with my beautiful voice, send:
 Use the /examples command to copy-paste some cool example questions!
 
 Oh and don't forget you can ask me stuff in any of your chats!
-Just type \`\`\`@mrwolfa\`\`\` followed by your question, I will answer straight away!
+Just type \`\`\`@mrwolfabot\`\`\` followed by your question, I will answer straight away!
 Click on the result if you want to send the answer to the chat you're in.`,
 
     examples: ["There you go, copy-paste and send me this questions!",
