@@ -25,8 +25,8 @@ class EchoTestAnswerer extends Answerer {
         return this.ctx.reply(`${this.questionText} is ${this.mathResult}`)
     }
 
-    answerExpression() {
-        return this.ctx.reply(`${this.questionText} is expression`)
+    async answerExpression() {
+        return await this.ctx.reply(`${this.questionText} is expression`)
     }
 
 

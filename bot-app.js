@@ -12,9 +12,8 @@ const replies = require("./app/utils/replies")
 const chatBot = require("./app/chat-bot")
 const inlineBot = require("./app/inline-bot")
 
-
-const Question = require("./app/Question")
-const EchoTestAnswerer = require("./app/EchoTestAnswerer")
+const { answerEnglishWithText, answerEnglishWithVoice } = require("./app/fastChatStrategies")
+const FastChatAnswerer = require("./app/FastChatAnswerer")
 
 
 module.exports = (bot) => {
@@ -100,7 +99,10 @@ module.exports = (bot) => {
         // console.log(userInput)
         const question = userInput.replace(/\!mes\s+/, "")
         // console.log(question)
-        await answerQuestion(ctx, question, chatBot, "writeSpokenAnswer")
+        // await answerQuestion(ctx, question, chatBot, "writeSpokenAnswer")
+        const fastWriterChatBot = new FastChatAnswerer(ctx, question, answerEnglishWithText)
+
+        await fastWriterChatBot.answer()
     })
 
 
@@ -116,7 +118,10 @@ module.exports = (bot) => {
         // console.log(userInput)
         const question = userInput.replace(/\!voi\s+/, "")
         // console.log(question)
-        await answerQuestion(ctx, question, chatBot, "speakSpokenAnswer")
+        // await answerQuestion(ctx, question, chatBot, "speakSpokenAnswer")
+        const fastSpeakerChatBot = new FastChatAnswerer(ctx, question, answerEnglishWithVoice)
+
+        await fastSpeakerChatBot.answer()
     })
 
 

@@ -24,7 +24,7 @@ class Answerer {
 
         if (this.mathResult) return this.answerMath()
 
-        if (this.question.resemblesExpression()) return this.answerExpression()
+        if (this.question.resemblesExpression()) return await this.answerExpression()
 
 
         return this.answerInvalid()
