@@ -7,6 +7,10 @@ class Answerer {
         this.mathResult = null;
     }
 
+    get questionInfo() {
+        return this.question.getInfo()
+    }
+
     async answer() {
 
         if (this.question.isTooLong()) return this.answerTooLong()

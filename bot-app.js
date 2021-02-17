@@ -9,11 +9,13 @@ const { isEnglish, isTooLong } = require("./app/utils/validators")
 const replies = require("./app/utils/replies")
 
 
-const chatBot = require("./app/chat-bot")
-const inlineBot = require("./app/inline-bot")
+// const chatBot = require("./app/chat-bot")
+// const inlineBot = require("./app/inline-bot")
 
 const { answerEnglishWithText, answerEnglishWithVoice } = require("./app/fastChatStrategies")
 const FastChatAnswerer = require("./app/FastChatAnswerer")
+
+const InlineAnswerer = require("./app/InlineAnswerer");
 
 
 module.exports = (bot) => {
@@ -131,7 +133,12 @@ module.exports = (bot) => {
         const question = ctx.inlineQuery.query
         // console.log(question)
 
-        await answerQuestion(ctx, question, inlineBot, "replySpokenAnswer")
+        // await answerQuestion(ctx, question, inlineBot, "replySpokenAnswer")
+        const inlineBot = new InlineAnswerer(ctx, question)
+
+        // console.log(inlineBot.questionInfo)
+
+        await inlineBot.answer()
     })
 
 

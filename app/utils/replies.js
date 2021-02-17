@@ -8,15 +8,14 @@ To ask me something, send me a message like this:
 
 *!mes your question*
     
-If you want me to answer you with my beautiful voice, send:
+If you want me to answer you with my robot voice, send:
 
 *!voi your question*
     
 Use the /examples command to copy-paste some cool example questions!
 
 Oh and don't forget you can ask me stuff in any of your chats!
-Just type \`\`\`@mrwolfabot\`\`\` followed by your question, I will answer straight away!
-Click on the result if you want to send the answer to the chat you're in.`,
+Just type \`\`\` @mrwolfabot your question \`\`\`I will answer straight away! Click on the result if you want to send the answer to the chat you're in.`,
 
     examples: ["There you go, copy-paste and send me this questions!",
         "!mes how big is the moon?",
@@ -29,7 +28,8 @@ Click on the result if you want to send the answer to the chat you're in.`,
     tooShort: "I don't have enough words to understand your question!",
     math: "Answer:",
     invalidQuestion: "I don't understand your question, please use the english language or a math expression",
-    inlineTitle: "Ask me anything!",
+    inlineTitleAsk: "Ask me anything!",
+    inlineTitleAnswer: "I've got that!",
     inlineWelcome: "Waiting for a valid question :)",
     inlineInvalid: "No valid question was asked! :(",
     inlineSwitchPrivate: "Ask me a question in private instead"
