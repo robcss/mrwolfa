@@ -36,8 +36,9 @@ class FastChatAnswerer extends Answerer {
 
     async answerExpression() {
         this.answerComputing()
-        const result = await getWolframShort(this.questionText)
-        return this.ctx.reply(`${replies.math} ${result}`, this.replyConfig)
+        const { result, failed } = await getWolframShort(this.questionText)
+        const answer = failed ? result : `${replies.math} ${result}`
+        return this.ctx.reply(answer, this.replyConfig)
 
     }
 

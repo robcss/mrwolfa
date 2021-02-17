@@ -51,9 +51,11 @@ class InlineAnswerer extends Answerer {
     }
 
     async answerEnglish() {
-        const result = await getWolframSpoken(this.questionText)
+        const { result, failed } = await getWolframSpoken(this.questionText)
 
-        return this.answerInlineQAReply(replies.inlineTitleAnswer, result, result)
+        const title = failed ? replies.inlineTitleFailed : replies.inlineTitleAnswer
+
+        return this.answerInlineQAReply(title, result, result)
     }
 
     answerMath() {
@@ -61,9 +63,12 @@ class InlineAnswerer extends Answerer {
     }
 
     async answerExpression() {
-        const result = await getWolframShort(this.questionText)
+        const { result, failed } = await getWolframShort(this.questionText)
 
-        return this.answerInlineQAReply(replies.inlineTitleAnswer, `${replies.math} ${result}`, result)
+        const title = failed ? replies.inlineTitleFailed : replies.inlineTitleAnswer
+        const description = failed ? result : `${replies.math} ${result}`
+
+        return this.answerInlineQAReply(title, description, result)
     }
 
     answerInvalid() {
