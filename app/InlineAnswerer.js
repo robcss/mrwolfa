@@ -15,7 +15,7 @@ class InlineAnswerer extends Answerer {
             title: "default",
             description: "default",
             url: "",
-            thumb_url: thumbs.wolframLogo,
+            thumb_url: thumbs.mrWolfa,
             input_message_content: {
                 message_text: "default"
             }
