@@ -27,6 +27,7 @@ The answer will be a text message regardless of the `!voi` command being used if
  
 ### Inline mode
 In any of your chats just type `@mrwolfabot your question` in the message field.
+
 Tap or click on the resulting answer panel to send both question and answer to the chat you're in.
 
 **Important**: don't use !mes and !voi commands, just type the question.
