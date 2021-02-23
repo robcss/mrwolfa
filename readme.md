@@ -1,6 +1,7 @@
 ﻿
 # mrwolfa
 A Wolfram|Alpha powered Telegram bot.
+
 Try it on Telegram:  https://t.me/mrwolfabot
 
 ![enter image description here](https://storage.googleapis.com/mrwolfa-thumbs/facebook_cover_photo_2.png)
@@ -44,9 +45,9 @@ A question will not be forwarded to Wolfram|Alpha if:
 English questions need to be first recognized as english by the question filter, then understood by Wolfram|Alpha.
 These rules of thumb work well for both steps:
 
-- Do not omit the Five Ws (who, what, when...) 
- -- "average human height" :x:
- -- "what is the average human height"  :heavy_check_mark:
+1. Do not omit the Five Ws (who, what, when...)
+- "average human height" :x:
+- "what is the average human height"  :heavy_check_mark:
 
 These rules will be expanded in the future as the question filter is improved.
 
