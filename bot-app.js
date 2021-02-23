@@ -2,9 +2,6 @@ require('dotenv').config();
 
 const rateLimit = require('telegraf-ratelimit')
 
-const math = require("mathjs")
-const { re } = require("mathjs")
-
 const replies = require("./app/utils/replies")
 
 const { answerEnglishWithText, answerEnglishWithVoice } = require("./app/fastChatStrategies")
