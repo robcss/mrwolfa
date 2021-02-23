@@ -52,7 +52,7 @@ module.exports = (bot) => {
     // chatBot
     bot.hears(/^\!\bmes\b$/, (ctx) => {
         const msgId = ctx.update.message.message_id
-        ctx.reply("Don't forget to write your question after !mes, for example:\n!mes how big is the moon?", { reply_to_message_id: msgId })
+        ctx.reply(replies.noQuestionMes, { reply_to_message_id: msgId })
     })
 
     bot.hears(/^\!\bmes\b\s+.*/, async (ctx) => {
@@ -70,7 +70,7 @@ module.exports = (bot) => {
 
     bot.hears(/^\!\bvoi\b$/, (ctx) => {
         const msgId = ctx.update.message.message_id
-        ctx.reply("Don't forget to write your question after !voi, for example:\n!voi how big is the moon?", { reply_to_message_id: msgId })
+        ctx.reply(replies.noQuestionVoi, { reply_to_message_id: msgId })
     })
 
     bot.hears(/^\!\bvoi\b\s+.*/, async (ctx) => {

@@ -22,6 +22,8 @@ Just type \`\`\` @mrwolfabot your question \`\`\`I will answer straight away! Cl
         "!mes integral of e",
         "!voi what is the food with most calories?",
         "!voi what is the temperature of the sun in celsius"],
+    noQuestionMes: "Don't forget to write your question after !mes, for example:\n!mes how big is the moon?",
+    noQuestionVoi: "Don't forget to write your question after !voi, for example:\n!mes how big is the moon?",
     failed: "I can't connect to Wolfram Alpha right now, try again later!",
     tooLong: "Your question is too long! Try again with less characters",
     tooShort: "I don't have enough words to understand your question!",
