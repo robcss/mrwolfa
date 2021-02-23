@@ -27,7 +27,7 @@ const client = new textToSpeech.TextToSpeechClient(clientOptions);
 module.exports.synthesizeVoice = async (text) => {
     // text = The text to synthesize
 
-    const wavenetVoice = "en-GB-Wavenet-D"
+    // const wavenetVoice = "en-GB-Wavenet-D"
     const standardVoice = "en-GB-Standard-D"
     // Construct the request
     const request = {
@@ -40,8 +40,6 @@ module.exports.synthesizeVoice = async (text) => {
 
     // Performs the text-to-speech request
     const [response] = await client.synthesizeSpeech(request);
-
-    // console.log('voice synthesized');
 
     return response.audioContent
 }

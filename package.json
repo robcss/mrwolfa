@@ -14,9 +14,11 @@
     "dotenv": "^8.2.0",
     "languagedetect": "^2.0.0",
     "mathjs": "^9.1.0",
-    "ngrok": "^3.4.0",
     "telegraf": "^4.0.1",
     "telegraf-ratelimit": "^2.0.0",
     "wolfram-alpha-api": "https://products.wolframalpha.com/api/libraries/javascript/wolfram-alpha-api-1.0.0-rc.1.tgz"
+  },
+  "devDependencies": {
+    "ngrok": "^3.4.0"
   }
 }

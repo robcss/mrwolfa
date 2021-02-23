@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { Telegraf, Markup } = require('telegraf')
+const { Telegraf } = require('telegraf')
 
 const token = process.env.BOT_TOKEN
 const myPort = process.env.PORT || 3000

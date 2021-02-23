@@ -1,8 +1,10 @@
 require('dotenv').config()
 
 const replies = require("../utils/replies")
+const waErrors = require("../utils/waErrors")
 
 const WolframAlphaAPI = require('wolfram-alpha-api');
+
 const waProdId = process.env.NODE_ENV === "development" ? process.env.WOLFRAM_APP_ID_DEV : process.env.WOLFRAM_APP_ID
 const waIds = [waProdId, ...process.env.WOLFRAM_APP_ID_BACKUP.split(",")]
 
@@ -20,24 +22,36 @@ const getWolfram = async (question, method) => {
         }
     }
 
+    const response = {
+        result: null,
+        failed: null
+    }
+
     for ([i, waApi] of waApis.entries()) {
         try {
             console.log(`waApi call: ${method} - Attempt with instance: ${i}`)
-            return await waApicall(waApi)
+            response.result = await waApicall(waApi)
+            response.failed = false
+            return response
         } catch (error) {
 
-            if (error.message !== "Error 1: Invalid appid") {
+            if (error.message !== waErrors.invalidAppId) {
                 console.log(error.message)
-                return error.message
+                response.result = error.message
+                response.failed = true
+                return response
             }
 
             console.log(`waApi call: ${method} - Instance ${i} failed - Retrying with instance ${i + 1}`)
         }
     }
 
-    return replies.failed
+    response.result = replies.failed
+    response.failed = true
+    return response
 
 }
+
 
 module.exports.getWolframSpoken = async (question) => {
     return await getWolfram(question, "spoken")
